@@ -54,8 +54,7 @@ jobs:
           # Set the kubeconfig environment variable for kubectl to use Minikube's config
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
-          export KUBEVIRT_KUBEVIRT_API=$(minikube ip):6443
-          kubectl version --short  # Check kubectl version and verify connection
+          kubectl version  # No --short flag, just the default version output
 
       - name: Deploy to Minikube
         run: |
