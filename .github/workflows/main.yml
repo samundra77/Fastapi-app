@@ -42,18 +42,19 @@ jobs:
       - name: Start Minikube
         run: |
           minikube start --driver=docker
+          # Ensure kubectl can access the Minikube cluster
+          minikube status
 
       - name: Set up kubectl to use Minikube
         run: |
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
-          export KUBEVERSION=$(kubectl version --client -o json | jq -r .clientVersion.gitVersion)
-          echo "Kube Version: $KUBEVERSION"
+          kubectl config current-context
 
-      - name: Check if Kubernetes is ready
+      - name: Wait for Kubernetes API server
         run: |
-          kubectl wait --for=condition=ready pod --all --timeout=300s
-          kubectl get nodes
+          kubectl cluster-info
+          kubectl get nodes || exit 1  # Exit with a non-zero status if kubectl get nodes fails
 
       - name: Deploy to Minikube
         run: |
