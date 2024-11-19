@@ -54,7 +54,8 @@ jobs:
           # Set the kubeconfig environment variable for kubectl to use Minikube's config
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
-          kubectl version  # No --short flag, just the default version output
+          kubectl config use-context minikube  # Ensure kubectl uses the minikube context
+          kubectl version  # Check the connection to the cluster
 
       - name: Deploy to Minikube
         run: |
