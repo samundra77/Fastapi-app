@@ -49,10 +49,6 @@ jobs:
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
 
-      - name: Test kubectl access to Minikube
-        run: |
-          kubectl get nodes
-
       - name: Deploy to Minikube
         run: |
           kubectl apply -f deployment.yaml  # Adjust the path if necessary
