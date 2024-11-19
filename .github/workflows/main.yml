@@ -42,14 +42,15 @@ jobs:
       - name: Start Minikube
         run: |
           minikube start --driver=docker
-          # Ensure kubectl can access the Minikube cluster
+          # Ensure the cluster is running and obtain the kubeconfig
           minikube status
+          minikube kubeconfig > $HOME/.kube/config
 
       - name: Set up kubectl to use Minikube
         run: |
-          mkdir -p $HOME/.kube
-          minikube kubectl -- config view --raw > $HOME/.kube/config
-          # Set the current context to Minikube
+          # Check if the kubeconfig is set properly
+          cat $HOME/.kube/config
+          kubectl config get-contexts
           kubectl config use-context minikube
           kubectl config current-context
 
