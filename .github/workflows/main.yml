@@ -42,7 +42,7 @@ jobs:
       - name: Start Minikube with Docker driver
         run: |
           minikube start --driver=docker
-          minikube status
+          minikube status  # Check Minikube status
 
       - name: Set up kubectl to use Minikube
         run: |
@@ -50,8 +50,12 @@ jobs:
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
           kubectl config use-context minikube || echo "No Minikube context found, skipping"
+          
+      - name: Check Minikube kubeconfig context
+        run: |
+          kubectl config get-contexts  # Print available contexts
 
-      - name: Deploy to Minikube
+      - name: Apply Kubernetes configurations
         run: |
           kubectl apply -f deployment.yaml  # Adjust the path if necessary
           kubectl apply -f service.yaml     # Adjust the path if necessary
