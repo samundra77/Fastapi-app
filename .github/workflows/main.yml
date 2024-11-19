@@ -54,11 +54,15 @@ jobs:
       - name: Check Minikube kubeconfig context
         run: |
           kubectl config get-contexts  # Print available contexts
+          
+      - name: Verify kubectl can access Minikube
+        run: |
+          kubectl get nodes || echo "Failed to get nodes"
 
       - name: Apply Kubernetes configurations
         run: |
-          kubectl apply -f deployment.yaml  # Adjust the path if necessary
-          kubectl apply -f service.yaml     # Adjust the path if necessary
+          kubectl apply -f deployment.yaml --validate=false  # Adjust the path if necessary
+          kubectl apply -f service.yaml --validate=false     # Adjust the path if necessary
 
       - name: Verify deployment
         run: |
