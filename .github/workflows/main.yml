@@ -49,6 +49,8 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
+          # Set the current context to Minikube
+          kubectl config use-context minikube
           kubectl config current-context
 
       - name: Wait for Kubernetes API server
