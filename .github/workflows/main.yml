@@ -39,27 +39,19 @@ jobs:
           chmod +x minikube
           sudo mv minikube /usr/local/bin/
 
-      - name: Start Minikube with Docker driver
+      - name: Start Minikube
         run: |
           minikube start --driver=docker
-          minikube status  # Check Minikube status
 
       - name: Set up kubectl to use Minikube
         run: |
           # Set the kubeconfig environment variable for kubectl to use Minikube's config
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
-          kubectl config use-context minikube || echo "No Minikube context found, skipping"
-          
-      - name: Check Minikube kubeconfig context
-        run: |
-          kubectl config get-contexts  # Print available contexts
-          
-      - name: Verify kubectl can access Minikube
-        run: |
-          kubectl get nodes || echo "Failed to get nodes"
+          export KUBEVERSION=$(kubectl version --client -o json | jq -r .clientVersion.gitVersion)
+          echo "Kube Version: $KUBEVERSION"
 
-      - name: Apply Kubernetes configurations
+      - name: Deploy to Minikube
         run: |
           kubectl apply -f deployment.yaml --validate=false  # Adjust the path if necessary
           kubectl apply -f service.yaml --validate=false     # Adjust the path if necessary
