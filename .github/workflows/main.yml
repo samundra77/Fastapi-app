@@ -45,16 +45,20 @@ jobs:
 
       - name: Set up kubectl to use Minikube
         run: |
-          # Set the kubeconfig environment variable for kubectl to use Minikube's config
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
           export KUBEVERSION=$(kubectl version --client -o json | jq -r .clientVersion.gitVersion)
           echo "Kube Version: $KUBEVERSION"
 
+      - name: Check if Kubernetes is ready
+        run: |
+          kubectl wait --for=condition=ready pod --all --timeout=300s
+          kubectl get nodes
+
       - name: Deploy to Minikube
         run: |
-          kubectl apply -f deployment.yaml --validate=false  # Adjust the path if necessary
-          kubectl apply -f service.yaml --validate=false     # Adjust the path if necessary
+          kubectl apply -f deployment.yaml --validate=false
+          kubectl apply -f service.yaml --validate=false
 
       - name: Verify deployment
         run: |
