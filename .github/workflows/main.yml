@@ -45,8 +45,16 @@ jobs:
 
       - name: Set up kubectl to use Minikube
         run: |
+          # Set the kubeconfig environment variable for kubectl to use Minikube's config
+          export KUBEVERSION=$(minikube version | awk '{print $3}' | sed 's/,//')
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBEVERSION}/bin/linux/amd64/kubectl
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+          # Use the kubectl that comes with Minikube to set up the kubeconfig
+          echo "Setting up kubectl..."
           mkdir -p $HOME/.kube
-          cp -i $(minikube kubeconfig) $HOME/.kube/config
+          cp $(minikube -p minikube kubeconfig) $HOME/.kube/config
 
       - name: Test kubectl access to Minikube
         run: |
