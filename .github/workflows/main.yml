@@ -39,15 +39,23 @@ jobs:
           chmod +x minikube
           sudo mv minikube /usr/local/bin/
 
-      - name: Start Minikube
+      - name: Install Docker dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+      - name: Start Minikube with Docker driver
         run: |
           minikube start --driver=docker
+          minikube status
 
       - name: Set up kubectl to use Minikube
         run: |
           # Set the kubeconfig environment variable for kubectl to use Minikube's config
           mkdir -p $HOME/.kube
           minikube kubectl -- config view --raw > $HOME/.kube/config
+          export KUBEVIRT_KUBEVIRT_API=$(minikube ip):6443
+          kubectl version --short  # Check kubectl version and verify connection
 
       - name: Deploy to Minikube
         run: |
