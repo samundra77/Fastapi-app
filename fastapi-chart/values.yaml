@@ -1,0 +1,20 @@
+replicaCount: 2
+
+image:
+  repository: samundra77/fastapi-app
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: false
+
+autoscaling:
+  enabled: false
