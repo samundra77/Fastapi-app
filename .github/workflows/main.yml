@@ -1,4 +1,4 @@
-name: Build and Deploy FastAPI to Kubernetes
+name: Build and Deploy FastAPI to Minikube
 
 on:
   push:
@@ -33,15 +33,29 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-app:$GITHUB_SHA
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}  # Make sure KUBECONFIG is set up as a secret
-      
-      - name: Deploy to Kubernetes
+      - name: Install Minikube
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          chmod +x minikube
+          sudo mv minikube /usr/local/bin/
+
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
+
+      - name: Set up kubectl to use Minikube
+        run: |
+          mkdir -p $HOME/.kube
+          cp -i $(minikube kubeconfig) $HOME/.kube/config
+
+      - name: Test kubectl access to Minikube
+        run: |
+          kubectl get nodes
+
+      - name: Deploy to Minikube
+        run: |
+          kubectl apply -f deployment.yaml  # Adjust the path if necessary
+          kubectl apply -f service.yaml     # Adjust the path if necessary
 
       - name: Verify deployment
         run: |
